@@ -109,7 +109,7 @@ class Weather {
   int tp;
   String updatedAt;
   int wd;
-  int ws;
+  double ws;
 
   Weather(
       {this.ts,
@@ -154,7 +154,7 @@ class Weather {
 
 class Pollution {
   String ts;
-  int aqius;
+  dynamic aqius;
   String mainus;
   int aqicn;
   String maincn;
