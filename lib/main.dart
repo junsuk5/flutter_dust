@@ -1,8 +1,9 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_dust/air_info.dart';
 import 'package:flutter_dust/models/AirResult.dart';
-import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 void main() => runApp(MyApp());
 
@@ -10,12 +11,17 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AirInfo()),
+      ],
+      child: MaterialApp(
+        title: 'Flutter Demo',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+        ),
+        home: Main(),
       ),
-      home: Main(),
     );
   }
 }
@@ -26,33 +32,23 @@ class Main extends StatefulWidget {
 }
 
 class _MainState extends State<Main> {
-  AirResult _result;
-
-  Future<AirResult> fetchData() async {
-    var response = await http
-        .get('https://api.airvisual.com/v2/nearest_city?key=YKK6AtsGKLrRZyJht');
-
-    AirResult result = AirResult.fromJson(json.decode(response.body));
-
-    return result;
-  }
 
   @override
   void initState() {
     super.initState();
 
-    fetchData().then((airResult) {
-      setState(() {
-        _result = airResult;
-      });
-    });
+    // initState에서는 listen: false 꼭 해 줄 것
+    Provider.of<AirInfo>(context, listen: false).fetchData();
   }
 
   @override
   Widget build(BuildContext context) {
+    AirInfo airInfo = Provider.of<AirInfo>(context);
+    AirResult result = airInfo.result;
+
     return Scaffold(
       body: Center(
-        child: _result == null
+        child: airInfo.isLoading
             ? CircularProgressIndicator()
             : Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -77,16 +73,16 @@ class _MainState extends State<Main> {
                                 children: <Widget>[
                                   Text('얼굴사진'),
                                   Text(
-                                    '${_result.data.current.pollution.aqius}',
+                                    '${result.data.current.pollution.aqius}',
                                     style: TextStyle(fontSize: 40),
                                   ),
                                   Text(
-                                    getString(_result),
+                                    getString(result),
                                     style: TextStyle(fontSize: 20),
                                   ),
                                 ],
                               ),
-                              color: getColor(_result),
+                              color: getColor(result),
                               padding: const EdgeInsets.all(8.0),
                             ),
                             Padding(
@@ -98,7 +94,7 @@ class _MainState extends State<Main> {
                                   Row(
                                     children: <Widget>[
                                       Image.network(
-                                        'https://airvisual.com/images/${_result.data.current.weather.ic}.png',
+                                        'https://airvisual.com/images/${result.data.current.weather.ic}.png',
                                         width: 32,
                                         height: 32,
                                       ),
@@ -106,15 +102,15 @@ class _MainState extends State<Main> {
                                         width: 16,
                                       ),
                                       Text(
-                                        '${_result.data.current.weather.tp}',
+                                        '${result.data.current.weather.tp}',
                                         style: TextStyle(fontSize: 16),
                                       ),
                                     ],
                                   ),
                                   Text(
-                                      '습도 ${_result.data.current.weather.hu}%'),
+                                      '습도 ${result.data.current.weather.hu}%'),
                                   Text(
-                                      '풍속 ${_result.data.current.weather.ws}m/s'),
+                                      '풍속 ${result.data.current.weather.ws}m/s'),
                                 ],
                               ),
                             )
