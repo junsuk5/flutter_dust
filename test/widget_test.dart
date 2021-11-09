@@ -5,18 +5,15 @@
 // gestures. You can also use WidgetTester to find child widgets in the widget
 // tree, read text, and verify that the values of widget properties are correct.
 
-import 'package:flutter/material.dart';
-import 'package:flutter_dust/models/AirResult.dart';
-import 'package:flutter_test/flutter_test.dart';
-
-import 'package:flutter_dust/main.dart';
-import 'package:http/http.dart' as http;
-
 import 'dart:convert';
+
+import 'package:flutter_dust/models/air_result.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart' as http;
 
 void main() {
   test('http 통신 테스트', () async {
-    var response = await http.get('https://api.airvisual.com/v2/nearest_city?key=YKK6AtsGKLrRZyJht');
+    var response = await http.get(Uri.parse('https://api.airvisual.com/v2/nearest_city?key=36ff6fed-03b3-4c7b-b244-6df0158197cd'));
 
     expect(response.statusCode, 200);
 

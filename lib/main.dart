@@ -1,12 +1,14 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_dust/models/AirResult.dart';
+import 'package:flutter_dust/models/air_result.dart';
 import 'package:http/http.dart' as http;
 
-void main() => runApp(MyApp());
+void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -15,22 +17,24 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: Main(),
+      home: const Main(),
     );
   }
 }
 
 class Main extends StatefulWidget {
+  const Main({Key? key}) : super(key: key);
+
   @override
   _MainState createState() => _MainState();
 }
 
 class _MainState extends State<Main> {
-  AirResult _result;
+  AirResult? _result;
 
   Future<AirResult> fetchData() async {
-    var response = await http
-        .get('https://api.airvisual.com/v2/nearest_city?key=YKK6AtsGKLrRZyJht');
+    var response = await http.get(Uri.parse(
+        'https://api.airvisual.com/v2/nearest_city?key=36ff6fed-03b3-4c7b-b244-6df0158197cd'));
 
     AirResult result = AirResult.fromJson(json.decode(response.body));
 
@@ -53,18 +57,18 @@ class _MainState extends State<Main> {
     return Scaffold(
       body: Center(
         child: _result == null
-            ? CircularProgressIndicator()
+            ? const CircularProgressIndicator()
             : Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      Text(
+                      const Text(
                         '현재 위치 미세먼지',
                         style: TextStyle(fontSize: 30),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 16,
                       ),
                       Card(
@@ -75,18 +79,18 @@ class _MainState extends State<Main> {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceAround,
                                 children: <Widget>[
-                                  Text('얼굴사진'),
+                                  const Text('얼굴사진'),
                                   Text(
-                                    '${_result.data.current.pollution.aqius}',
-                                    style: TextStyle(fontSize: 40),
+                                    '${_result!.data.current.pollution.aqius}',
+                                    style: const TextStyle(fontSize: 40),
                                   ),
                                   Text(
-                                    getString(_result),
-                                    style: TextStyle(fontSize: 20),
+                                    getString(_result!),
+                                    style: const TextStyle(fontSize: 20),
                                   ),
                                 ],
                               ),
-                              color: getColor(_result),
+                              color: getColor(_result!),
                               padding: const EdgeInsets.all(8.0),
                             ),
                             Padding(
@@ -98,39 +102,41 @@ class _MainState extends State<Main> {
                                   Row(
                                     children: <Widget>[
                                       Image.network(
-                                        'https://airvisual.com/images/${_result.data.current.weather.ic}.png',
+                                        'https://airvisual.com/images/${_result!.data.current.weather.ic}.png',
                                         width: 32,
                                         height: 32,
                                       ),
-                                      SizedBox(
+                                      const SizedBox(
                                         width: 16,
                                       ),
                                       Text(
-                                        '${_result.data.current.weather.tp}',
-                                        style: TextStyle(fontSize: 16),
+                                        '${_result!.data.current.weather.tp}',
+                                        style: const TextStyle(fontSize: 16),
                                       ),
                                     ],
                                   ),
                                   Text(
-                                      '습도 ${_result.data.current.weather.hu}%'),
+                                      '습도 ${_result!.data.current.weather.hu}%'),
                                   Text(
-                                      '풍속 ${_result.data.current.weather.ws}m/s'),
+                                      '풍속 ${_result!.data.current.weather.ws}m/s'),
                                 ],
                               ),
                             )
                           ],
                         ),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 16,
                       ),
                       ClipRRect(
                         borderRadius: BorderRadius.circular(30),
-                        child: RaisedButton(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 15.0, horizontal: 50),
-                          color: Colors.orange,
-                          child: Icon(Icons.refresh, color: Colors.white),
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 15.0, horizontal: 50),
+                            primary: Colors.orange,
+                          ),
+                          child: const Icon(Icons.refresh, color: Colors.white),
                           onPressed: () {},
                         ),
                       )
